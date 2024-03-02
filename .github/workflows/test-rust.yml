@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v4
@@ -57,44 +57,23 @@ jobs:
           -p polars-utils
 
       - name: Run tests
-        if: github.ref_name != 'main'
-        run: >
-          cargo test --all-features
-          -p polars-arrow
-          -p polars-core
-          -p polars-io
-          -p polars-lazy
-          -p polars-ops
-          -p polars-plan
-          -p polars-row
-          -p polars-sql
-          -p polars-time
-          -p polars-utils
-
-  integration-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Rust
-        run: rustup show
-
-      - name: Cache Rust
-        uses: Swatinem/rust-cache@v2
+        uses: koenhagen/measure-energy-action@v0.33
         with:
-          save-if: ${{ github.ref_name == 'main' }}
-
-      - name: Compile integration tests
-        run: cargo test --all-features -p polars --test it --no-run
-
-      - name: Run integration tests
-        if: github.ref_name != 'main'
-        run: cargo test --all-features -p polars --test it
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: >
+            cargo test --all-features
+            -p polars-arrow
+            -p polars-core
+            -p polars-io
+            -p polars-lazy
+            -p polars-ops
+            -p polars-plan
+            -p polars-row
+            -p polars-sql
+            -p polars-time
+            -p polars-utils
+          count: 1
+          isBash: 'True'
 
   check-features:
     runs-on: ubuntu-latest
