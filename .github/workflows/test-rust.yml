@@ -73,7 +73,6 @@ jobs:
             -p polars-time
             -p polars-utils
           count: 1
-          isBash: 'True'
 
   check-features:
     runs-on: ubuntu-latest
