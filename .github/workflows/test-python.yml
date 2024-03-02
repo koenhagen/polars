@@ -90,11 +90,12 @@ jobs:
           COV: ${{ !(matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12') && '--cov' || '--no-cov' }}
         run: pytest $COV -n auto --dist loadgroup -m "not benchmark and not docs"
 
-      - name: Run tests async reader tests
-        if: github.ref_name != 'main' && matrix.os != 'windows-latest'
-        env:
-          POLARS_FORCE_ASYNC: 1
-        run: pytest -m "not benchmark and not docs" tests/unit/io/
+      - name: Run tests async reader tests          
+        uses: koenhagen/measure-energy-action@v0.33
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: pytest -m "not benchmark and not docs" tests/unit/io/
+          count: 1
 
       - name: Check import without optional dependencies
         if: github.ref_name != 'main' && matrix.python-version == '3.12' && matrix.os == 'ubuntu-latest'
